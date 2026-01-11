@@ -220,7 +220,8 @@
 ;;; @ screen - buffer                                               ;;;
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 
-;; バッファ画面外文字の切り詰め表示（有効：t、無効：nil）
+;; Enable truncate long line by default.
+;; https://www.emacswiki.org/emacs/TruncateLines
 (set-default 'truncate-lines t)
 
 ;; ウィンドウ縦分割時のバッファ画面外文字の切り詰め表示（有効：t、無効：nil）
@@ -340,8 +341,13 @@
 
 (require 'tabbar)
 
-;; tabbar有効化（有効：t、無効：nil）
-(call-interactively 'tabbar-mode t)
+;; ORG BEGIN "For the case after M-x eval-buffer"
+;; ;; tabbar有効化（有効：t、無効：nil）
+;; (call-interactively 'tabbar-mode t)
+;; ORG END
+;; CHG START
+(tabbar-mode)
+;; CHG END
 
 ;; ボタン非表示
 (dolist (btn '(tabbar-buffer-home-button
@@ -463,17 +469,9 @@
 (setq delete-old-versions t)  ;; バックアップファイル削除の実行有無
 
 ;; ファイルオープン時のバックアップ（~）の格納ディレクトリ
-;; oz20240329a: Change emacs backup & auto-save directories
-;; ORG START "oz20240329a"
-;; (setq backup-directory-alist
-;;       (cons (cons "\\.*$" (expand-file-name "/tmp/emacsbk"))
-;;             backup-directory-alist))
-;; ORG END   "oz20240329a"
-;; CHG START "oz20240329a"
 (setq backup-directory-alist
       (cons (cons "\\.*$" (expand-file-name "~/.emacs.d/backup"))
             backup-directory-alist))
-;; CHG END   "oz20240329a"
 
 ;; 編集中ファイルの自動バックアップ（有効：t、無効：nil）
 (setq backup-inhibited nil)
@@ -581,14 +579,12 @@
 ;;; @ package manager                                               ;;;
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 
-;; DEL START "oz20230109a"
-;; (require 'package)
-;; (add-to-list 'package-archives
-;;              '("melpa" . "http://melpa.milkbox.net/packages/") t)
-;; (add-to-list 'package-archives
-;;              '("marmalade" . "http://marmalade-repo.org/packages/"))
-;; (package-initialize)
-;; DEL END   "oz20230109a"
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/"))
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
 
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
@@ -608,23 +604,100 @@
 ;; (load-theme 'emacs-21 t)
 ;; (load-theme 'dark-laptop t)
 ;; (load-theme 'badwolf t)
-(load-theme 'busybee t)
+;; (load-theme 'busybee t)
 ;; (load-theme 'high-contrast t)
+;; (load-theme 'monokai t)
+;; (load-theme 'atom-one-dark t)
+;; (load-theme 'material t)
+(load-theme 'material-dark t)
 
-;; Tune colors on the mode line for busybee
-(set-face-foreground 'mode-line "gray30")
-(set-face-background 'mode-line "gray85")
-(set-face-foreground 'mode-line-inactive "gray30")
-(set-face-background 'mode-line-inactive "gray85")
-(set-face-foreground 'mode-line-buffer-id "gray30")
-(set-face-background 'mode-line-buffer-id "gray85")
+;; 20251114a: Prevent such case that font-lock-keyword-face detects "for" of "format" from occurrence
+;; ORG START "20251114a"
+;; (font-lock-add-keywords
+;;  'c-mode
+;;  '(
+;;    ("\\<if\\|for\\|while\\|(switch)\\|return\\|else\\|(do)\\|case\\|break\\|continue\\>" . font-lock-keyword-face)
+;;    ("\\<\\([a-zA-Z_]*[a-zA-Z0-9_]+\\)\\([ \t]*\\)(" 1 font-lock-function-name-face)   ;functions()
+;;    ("\\<\\([A-Z_][A-Z0-9_]*\\)\\>" 1 font-lock-constant-face)             ;CONSTANTS
+;;    )
+;;  )
+;; ORG END
+;; CHG START "20251114a"
+(font-lock-add-keywords
+ 'c-mode
+ '(
+   ("\\<\\(if\\|for\\|while\\|switch\\|return\\|else\\|do\\|case\\|break\\|continue\\)\\>" . font-lock-keyword-face)
+   ("\\<\\([a-zA-Z_][a-zA-Z0-9_]*\\)\\([ \t]*\\)(" 1 font-lock-function-name-face)   ;functions()
+   ("\\<\\([A-Z_][A-Z0-9_]*\\)\\>" 1 font-lock-constant-face)             ;CONSTANTS
+   )
+ )
+;; CHG END
 
+(if (equal custom-enabled-themes '(emacs-21))
+    (progn
+      (set-face-background 'hiwin-face "white")
+      (defface my-face-b-1 '((t (:background "light blue"))) nil)
+      (defface my-face-b-2 '((t (:background "light cyan"))) nil)
+      )
+  nil)
+
+(if (equal custom-enabled-themes '(busybee))
+    (progn
+      (set-face-background 'hiwin-face "#282828")
+      (defface my-face-b-1 '((t (:foreground "gray10" :underline t))) nil)
+      (defface my-face-b-2 '((t (:background "gray14"))) nil)
+
+      ;; Tune colors on the mode line for busybee
+      (set-face-foreground 'mode-line "gray30")
+      (set-face-background 'mode-line "gray85")
+      (set-face-foreground 'mode-line-inactive "gray30")
+      (set-face-background 'mode-line-inactive "gray85")
+      (set-face-foreground 'mode-line-buffer-id "gray30")
+      (set-face-background 'mode-line-buffer-id "gray85")
+     )
+  nil)
+
+(if (equal custom-enabled-themes '(monokai))
+    (progn
+    ;;(set-face-background 'hiwin-face "#272822")
+      (set-face-background 'hiwin-face "#2E2F29")
+      (defface my-face-b-1 '((t (:foreground "#2E2F29" :underline t))) nil)
+      (defface my-face-b-2 '((t (:background "#2E2F29"))) nil)
+      )
+  nil)
+
+(if (equal custom-enabled-themes '(atom-one-dark))
+    (progn
+    ;;(set-face-background 'hiwin-face "#282C34")
+      (set-face-background 'hiwin-face "#2C323C")
+      (defface my-face-b-1 '((t (:foreground "#2C323C" :underline t))) nil)
+      (defface my-face-b-2 '((t (:background "#2C323C"))) nil)
+      )
+  nil)
+
+(if (equal custom-enabled-themes '(material))
+    (progn
+    ;;(set-face-background 'hiwin-face "#263238")
+      (set-face-background 'hiwin-face "#303C42")
+      (defface my-face-b-1 '((t (:foreground "#303C42" :underline t))) nil)
+      (defface my-face-b-2 '((t (:background "#303C42"))) nil)
+      )
+  nil)
+
+(if (equal custom-enabled-themes '(material-dark))
+    (progn
+    ;;(set-face-background 'hiwin-face "#263238")
+      (set-face-background 'hiwin-face "#303C42")
+      (defface my-face-b-1 '((t (:foreground "#303C42" :underline t))) nil)
+      (defface my-face-b-2 '((t (:background "#303C42"))) nil)
+      )
+  nil)
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 ;;; @ server                                                        ;;;
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 
-;; ;; emacs-server起動
+;; emacs-server起動
 ;; (require 'server)
 ;; (defun server-ensure-safe-dir (dir) "Noop" t)
 ;; (setq server-socket-dir "~/.emacs.d")
@@ -641,22 +714,10 @@
  (add-to-list 'exec-path "/app/aspell/bin")
  (setq-default ispell-program-name "aspell")
 
- ;; For a case to check English text spells in .tex doc including Japanese texts as well
+ ;; SKip Japanese words
  (eval-after-load "ispell"
    '(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
  )
-
-;; UNDER REVIEW START "impact for cpu load"
-;; ;; flyspell automatic start
-;; (setq-default flyspell-mode t)
-;; (mapc (lambda (hook) (add-hook hook 'flyspell-prog-mode))
-;;       '(
-;;         c-mode-common-hook
-;;         emacs-lisp-mode-hook
-;;         ))
-;; (mapc (lambda (hook) (add-hook hook '(lambda () (flyspell-mode 1))))
-;;       '(text-mode-hook))
-;; UNDER REVIEW END
 
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
@@ -664,7 +725,6 @@
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 
 (with-eval-after-load 'flymake
-
   ;; Appearance
   (add-hook 'flymake-mode-hook
             (lambda ()
@@ -702,7 +762,7 @@
   ;; UNDER REVIEW END
 )
 
-;; Enable/Disable flymake-mode by hand
+;; Manually enable/disable flymake-mode
 (global-set-key (kbd "C-^") 'flymake-mode)
 
 
@@ -871,7 +931,7 @@
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 
 (autoload 'google-set-c-style "google-c-style" nil t)
-(add-hook 'c-mode-common-hook 'google-set-c-style)
+(add-hook 'c++-mode-hook 'google-set-c-style)
 
 ;;
 ;; Another setting
@@ -895,8 +955,9 @@
   (insert "\t")
   )
 
-;; Wrap longer line automatically (disable by default)
+;; Wrap longer line automatically
 (setq text-mode-hook 'turn-off-auto-fill)
+
 (add-hook 'text-mode-hook
           #'(lambda()
              (progn (set-fill-column 70)
@@ -977,6 +1038,7 @@
 
 (autoload 'org-mode "org" nil t)
 (add-hook 'org-mode-hook 'howm-mode)
+
 (with-eval-after-load 'org
   (setq org-startup-folded 'showall)
   (setq org-src-fontify-natively t)
@@ -1000,11 +1062,10 @@
 (autoload 'gfm-mode "markdown-mode"
    "Major mode for editing GitHub Flavored Markdown files" t)
 
-(add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
-
 (add-hook 'markdown-mode-hook 'turn-off-auto-fill)
 
 (with-eval-after-load 'markdown-mode
+
   (setq pandoc-cmd (concat "pandoc -s -c " (getenv "MKDWCSS")))
   (custom-set-variables
    '(markdown-command pandoc-cmd)
@@ -1083,10 +1144,10 @@
 
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
-;;; @ visual-basic-mode                                             ;;;
+;;; @ powershell-mode                                               ;;;
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 
-(autoload 'vbnet-mode "vbnet-mode" "Mode for editing VB.NET code." t)
+(require 'powershell)
 
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
@@ -1097,20 +1158,17 @@
 (setq auto-mode-alist
       (append
        '(
-         ("\\.c$"    . c-mode)
-         ("\\.h$"    . c-mode)
-         ("\\.cpp$"  . c++-mode)
-         ("\\.cc$"   . c++-mode)
-         ("\\.hh$"   . c++-mode)
-         ("\\.el$"   . emacs-lisp-mode)
-         ("\\.icf$"  . icf-mode)
-         ("\\.sct$"  . sct-mode)
-         ("\\.ld$"   . ld-mode)
-         ("\\.txt$"  . org-mode)
-         ("\\.md$'"  . gfm-mode)
-         ("\\.vb$"   . vbnet-mode)
-         ("\\.vbs$"  . vbnet-mode)
-
+         ("\\.c$"   . c-mode)
+         ("\\.h$"   . c-mode)
+         ("\\.cpp$" . c++-mode)
+         ("\\.cc$"  . c++-mode)
+         ("\\.hh$"  . c++-mode)
+         ("\\.el$"  . emacs-lisp-mode)
+         ("\\.icf$" . icf-mode)
+         ("\\.sct$" . sct-mode)
+         ("\\.ld$"  . ld-mode)
+         ("\\.txt$" . org-mode)
+         ("\\.md$"  . gfm-mode)
          )
        auto-mode-alist))
 
@@ -1175,7 +1233,6 @@
 ;;; @ imenu-list                                                    ;;;
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 
-(autoload 'imenu-list "imenu-list" nil t)
 (with-eval-after-load 'imenu-list
   (define-key imenu-list-major-mode-map (kbd "j") 'next-line)
   (define-key imenu-list-major-mode-map (kbd "k") 'previous-line)
@@ -1234,13 +1291,6 @@
 
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
-;;; @ restart-emacs                                                 ;;;
-;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
-
-(require 'restart-emacs)
-
-
-;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 ;;; @ isearch-mode                                                  ;;;
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
 
@@ -1288,23 +1338,17 @@
 (setq null-device "/dev/null")
 
 ;; ChangeLog header
-(setq user-full-name "Oziidi")
-(setq user-mail-address "oziidi76@gmail.com")
+(setq user-full-name "yago-hirokazu")
+(setq user-mail-address "s001666667@gmail.com")
 
 ;; Diplay full-width space, tab, space at the end of line
-;; Dark themes
-(defface my-face-b-1 '((t (:foreground "gray10" :underline t))) nil)
-;; (defface my-face-b-1 '((t (:foreground "gray30" :underline t))) nil)
-(defface my-face-b-2 '((t (:background "gray14"))) nil)
-
-;; emacs-21
-;; (defface my-face-b-2 '((t (:background "light cyan"))) nil)
 
 ;; Meadow
 ;; (defface my-face-b-1 '((t (:background "bisque"))) nil)
 ;; (defface my-face-b-2 '((t (:background "LemonChiffon2"))) nil)
 
 (defface my-face-u-1 '((t (:foreground "SteelBlue" :underline t))) nil)
+
 (defvar my-face-b-1 'my-face-b-1)
 (defvar my-face-b-2 'my-face-b-2)
 (defvar my-face-u-1 'my-face-u-1)
@@ -1330,9 +1374,12 @@
 ;; Disable automatic indent
 (electric-indent-mode -1)
 
+
+;; Set /dev/null as null device instead NUL of Windows default
+(setq null-device "/dev/null")
+
+
 ;; Local Variables:
 ;; coding: utf-8
 ;; mode: emacs-lisp
 ;; End:
-
-;;; ends here
