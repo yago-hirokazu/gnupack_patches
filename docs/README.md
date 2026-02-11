@@ -8,13 +8,13 @@ gnupack allows Windows OS users to use cygwin and emacs in a ready-to-use manner
 
 ## 使い方
 
-* gnupack-pretest_devel-2016.07.09.exeを下記からダウンロード  
+* gnupack-pretest_devel-2017.11.19.exeを下記からダウンロード  
   [gnupack - ダウンロードファイル一覧](https://ja.osdn.net/projects/gnupack/releases/)  
-  リンク先のウェブページで「gnupack pretest」を探して「2016.07.09」をクリック  
+  リンク先のウェブページで「gnupack pretest」を探して「2017.11.19」をクリック  
 
-* gnupack-pretest_devel-2016.07.09.exeをダブルクリックすると展開先のディレクトリをきかれるのでgnupackを運用したい任意のディレクトリを入力
+* gnupack-pretest_devel-2017.11.19.exeをダブルクリックすると展開先のディレクトリをきかれるのでgnupackを運用したい任意のディレクトリを入力
 
-* gnupack-pretest_devel-2016.07.09を展開した同じディレクトリにこのgnupack_patches/を配置。  
+* gnupack-pretest_devel-2017.11.19を展開した同じディレクトリにこのgnupack_patches/を配置。  
   ディレクトリの名前を「gnupack_patches」を「gnupkack」に変更。  
   下記は(C:)ドライブ直下に配置した場合の例
 
