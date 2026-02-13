@@ -778,6 +778,7 @@
 )
 
 (add-hook 'c-mode-hook 'cscope-minor-mode)
+(add-hook 'python-mode-hook 'cscope-minor-mode)
 
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
@@ -869,9 +870,9 @@
  'c-mode-hook
  #'(lambda()
     (c-set-style "K&R")
-    (setq tab-width 8)
+    (setq c-basic-offset 4)
+    (setq tab-width 4)
     (setq indent-tabs-mode t)
-    (setq c-basic-offset 8)
     (setq comment-start "//")
     (setq comment-end "")
     ))
@@ -901,11 +902,25 @@
   (c-set-style "K&R")
   (setq c-basic-offset 4)
   (setq tab-width 4)
-  (setq indent-tabs-mode nil)
+  (setq indent-tabs-mode t)
   ;; comment style
   (setq comment-start "/*")
   (setq comment-end "*/")
   )
+
+;; my-c-mode
+(defun old-c-mode ()
+  "C mode."
+  (interactive)
+  (c-mode)
+  (c-set-style "K&R")
+  (setq c-basic-offset 8)
+  (setq tab-width 8)
+  (setq indent-tabs-mode t)
+  (setq comment-start "//")
+  (setq comment-end "")
+  )
+
 
 ;;
 ;; An example from "Linux Kernel Coding Rule"
@@ -1301,18 +1316,6 @@
                (define-key isearch-mode-map "\C-t" 'isearch-toggle-regexp)
                (define-key isearch-mode-map "\C-c" 'isearch-toggle-case-fold)
                (define-key isearch-mode-map "\C-j" 'isearch-edit-string))))
-
-
-;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
-;;; @ insert-time-stamp                                             ;;;
-;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
-
-(defun insert-time-stamp ()
-  "Insert a time stamp 'YYYY-MM-DD HH:MM:SS'."
-  (interactive)
-  (insert (format-time-string "%Y-%m-%d %H:%M:%S " (current-time))))
-
-(global-set-key (kbd "M-[") 'insert-time-stamp)
 
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;
